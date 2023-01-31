@@ -1,0 +1,37 @@
+* {
+    margin: 0px;
+    font-family: 'Lato', 'Trebuchet MS', Helvetica, sans-serif;
+    --main-color: #1B998B;
+    --secondary-color: #BA8F95;
+    --tertiary-color: #EFE6E7;
+}
+
+h1 {
+    font-weight: 700;
+    color: white;
+}
+
+header {
+    background: var(--main-color);
+}
+
+.card-body-custom {
+    background: var(--secondary-color);
+    color: white;
+    height: 120px;
+}
+
+.card-ul-container {
+    background: var(--tertiary-color);
+}
+
+.employee-name {
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.5;
+}
+
+.employee-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
