@@ -22,26 +22,26 @@ describe("Manager", () => {
             expect(manager.getRole(role)).toBe('Team Manager');
         });
         
-        it("return employee questions and address the employee's role in the questions in lowercase", ()=>{
+        it("return employee questions and address the team manager roel in the questions in lowercase", ()=>{
             for (let i = 0; i < manager.getQuestions().length; i++) {
                 expect(manager.getQuestions(role)[i].message).toContain('team manager');
             }
         })
     })
     
-    describe("manager questions to include asking for an office number and neither asking for a GitHub username or a school name", ()=>{
+    describe("manager questions to include asking for an office number but neither asking for a GitHub username nor a school name", ()=>{
         const manager = new Manager("Joe", 2, "manager@gmail.com");
         
         it("include a question that asks for the manager's office number", ()=>{
-            expect(manager.getQuestions().findIndex((item)=>{return item.message.includes('office number')}) !== -1).toBe(true) 
+            expect(manager.getQuestions().findIndex((item)=>{return item.message.includes('office number')}) !== -1).toBe(true);
         });
 
         it("exclude a question that asks for a GitHub username", ()=>{
-            expect(manager.getQuestions().findIndex((item)=>{return item.message.includes('GitHub')}) === -1).toBe(true)
+            expect(manager.getQuestions().findIndex((item)=>{return item.message.includes('GitHub')}) === -1).toBe(true);
         })
 
         it("exclude a question that asks for a school name", ()=>{
-            expect(manager.getQuestions().findIndex((item)=>{return item.message.includes('school')}) === -1).toBe(true)
+            expect(manager.getQuestions().findIndex((item)=>{return item.message.includes('school')}) === -1).toBe(true);
         });
     })
 });
