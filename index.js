@@ -8,7 +8,19 @@ const mockEngineer = new Engineer('', '', '', '');
 const Intern = require('./lib/Intern');
 const mockIntern = new Intern('', '', '', '');
 
-const employeeId = []; // TODO: to validate ID
+const askTeamInfo = [
+    {
+        type: "input",
+        message: "what's the team name?",
+        name: "teamName"
+    },
+    ...mockManager.getQuestions(),
+    {
+        type: "confirm",
+        message: "Would you like to add more member to the team?",
+        name: "confirmAddMember",
+    }
+]
 
 const loopQuestion = [
     {
@@ -27,20 +39,6 @@ const addTeamMember =  [
     }
 ]
 
-const askTeamInfo = [
-    {
-        type: "input",
-        message: "what's the team name?",
-        name: "teamName"
-    },
-    ...mockManager.getQuestions(),
-    {
-        type: "confirm",
-        message: "Would you like to add more member to the team?",
-        name: "confirmAddMember",
-    }
-]
-
 const teamData = []
 
 init();
@@ -55,12 +53,13 @@ function init() {
                 manager: new Manager(response.name, response.id, response.email, response.officeNum),
                 members: []
             }
+
             if(response.confirmAddMember) {
-                addMember(data);
+                addMember(data); // when choosing to add member, the data is passed to addMember() function
             }
             else {
-                teamData.push(data);
-                teamProfileRender(teamData);
+                teamData.push(data); // if there's only a manager in the team, then push the data to the teamData array right away,
+                teamProfileRender(teamData); // and start rendering an HTML page.
             }
         })
 }
@@ -82,11 +81,13 @@ async function addMember(team) {
         const responseMember = await inquirer.prompt(memberQuestion);
         
         const member = response.addTeamMember == 'Engineer'? new Engineer(responseMember.name, responseMember.id, responseMember.email, responseMember.github): new Intern(responseMember.name, responseMember.id, responseMember.email, responseMember.school)
+        
         team.members.push(member);
-        breakLoop = responseMember.confirmAddMember
+        breakLoop = responseMember.confirmAddMember; // the while loop would continue until a user does not wish to add any more member to the team
     }
 
     teamData.push(team);
+    console.log(teamData);
     teamProfileRender(teamData);
 }
 
@@ -99,21 +100,19 @@ function writeToFile(fileName, data) {
 }
 
 function getAltProperty(employee) {
-    if(employee.getRole() === 'team manager') {
+    if(employee.getRole() === 'Team Manager') {
         return employee.getOfficeNum();
-    } else if(employee.getRole() === 'engineer') {
+    } else if(employee.getRole() === 'Engineer') {
         return employee.getGithub();
     } else {
         return employee.getSchool();
     }
 }
 
-function teamProfileRender(data) {
-    const {teamName, manager, member} = data[0]; // TODO: render loop
+function teamProfileRender(teamData) {
+    const {teamName, manager, members} = teamData[0];
 
-    
-
-    const teamProfileHTML = `<div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center mt-3">
+    const managerProfileHTML = `<div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center mt-3">
                                 <div class="card" style="width: 20rem;">
                                     <div class="card-body card-body-custom">
                                         <h5 class="card-title employee-name">${manager.getName()}</h5>
@@ -128,6 +127,31 @@ function teamProfileRender(data) {
                                     </div>
                                 </div>
                             </div>`
+
+    const memberHTML = () => {
+        let teamRenderHTML = ``
+        for(let i = 0; i < members.length; i++) {
+            
+            const memberHTML = `<div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center mt-3">
+                                        <div class="card" style="width: 20rem;">
+                                            <div class="card-body card-body-custom">
+                                                <h5 class="card-title employee-name">${members[i].getName()}</h5>
+                                                <p class="card-text employee-title">${members[i].getRole()}</p>
+                                            </div>
+                                            <div class="card-ul-container">
+                                                <ul class="list-group list-group-flush px-4 py-4">
+                                                    <li class="list-group-item">${members[i].getId()}</li>
+                                                    <li class="list-group-item">${members[i].getEmail()}</li>
+                                                    <li class="list-group-item">${getAltProperty(members[i])}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>`
+            
+            teamRenderHTML += memberHTML;
+        }
+        return teamRenderHTML;
+    }
 
     const htmlPage = `<!DOCTYPE html>
                         <html lang="en">
@@ -150,16 +174,25 @@ function teamProfileRender(data) {
                             </header>
                             <section>
                                 <div class="container-fluid my-lg-5">
-                                    <div class="row d-flex justify-content-center">
-                                        ${teamProfileHTML}
+                                    <div class="row">
+                                        <div class="offset-2 col-8">
+                                                <div class="row d-flex justify-content-center">
+                                            ${managerProfileHTML}
+                                            ${memberHTML()}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </section>
-                        
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
                             <script src="../index.js"></script>
                         </body>
                         </html>`
     
+    console.log(`Team: ${teamName}`);
+    console.log(manager);
+    console.log(members);
+
     writeToFile('./dist/index.html', htmlPage);
+
 }
