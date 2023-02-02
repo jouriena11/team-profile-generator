@@ -188,10 +188,6 @@ function teamProfileRender(teamData) {
                             <script src="../index.js"></script>
                         </body>
                         </html>`
-    
-    console.log(`Team: ${teamName}`);
-    console.log(manager);
-    console.log(members);
 
     writeToFile('./dist/index.html', htmlPage);
 
